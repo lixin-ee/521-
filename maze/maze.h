@@ -41,22 +41,21 @@ public:
     maze(QWidget *parent = nullptr);
 
     void gameover();
-    void updatetime();
-    void returnhome();
     void destructwall();
-    void movemouse();
     void movecat();
     void keyPressEvent(QKeyEvent *event);
     ~maze();
 private slots:
-    //void findpath();
+    //void findpath();这个可以看情况做不做，如果太难实现就不做了，主要负责寻路，类似提示路线；
     void startgame1();
     void startgame2();
     void startgame3();
     void replay();
+    void returnhome();
     void initgame();
     void settingslot();
     void updatetimer();
+     void movemouse();
 private:
     Ui::maze *ui;
     QPushButton* setting;

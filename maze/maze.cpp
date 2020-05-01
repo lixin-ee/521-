@@ -28,35 +28,6 @@ maze::maze(QWidget *parent)
     QObject::connect(start2,SIGNAL(clicked()),this,SLOT(startgame2()));
     QObject::connect(start3,SIGNAL(clicked()),this,SLOT(startgame3()));
     QObject::connect(setting,SIGNAL(clicked()),this,SLOT(settingslot()));
-}
-void maze::startgame1()
-{
-    initgame();
-    gametime =MX*MY*0.2;
-       time=new QLCDNumber(this);
-       time->setMode(QLCDNumber::Dec);
-       time->setDigitCount(4);
-       time->setGeometry((MX/2-1)*Label_Size,MY*Label_Size,2*Label_Size,2*Label_Size);
-       time->setStyleSheet("font:50;color:red;");
-       time->setSegmentStyle(QLCDNumber::Flat);
-       time->show();
-       counttimer=new QTimer(this);
-       counttimer->start(1000);
-       QObject::connect(counttimer,SIGNAL(timeout()),this,SLOT(updatetimer()));
-
-}
-void maze::initgame()
-{
-    Clabel->hide();
-    Clabel->setDisabled(true);
-    start1->hide();
-    start1->setDisabled(true);
-    start2->hide();
-    start2->setDisabled(true);
-    start3->hide();
-    start3->setDisabled(true);
-    setting->hide();
-    setting->setDisabled(true);
     Return=new QPushButton(this);
     Replay=new QPushButton(this);
     clock1=new QLabel(this);
@@ -69,16 +40,66 @@ void maze::initgame()
     clock2->setGeometry(3*MX*Label_Size/5,MY*Label_Size,2*Label_Size,2*Label_Size);
     clock1->setStyleSheet("QLabel{border-image:url(:/time.png);}");
     clock2->setStyleSheet("QLabel{border-image:url(:/time.png);}");
+    Return->hide();
+    Return->setDisabled(true);
+    Replay->hide();
+    Replay->setDisabled(true);
+    clock1->hide();
+    clock1->setDisabled(true);
+    clock2->hide();
+    clock2->setDisabled(true);
+    time=new QLCDNumber(this);
+    time->setMode(QLCDNumber::Dec);
+    time->setDigitCount(4);
+    time->setGeometry((MX/2-1)*Label_Size,MY*Label_Size,2*Label_Size,2*Label_Size);
+    time->setStyleSheet("font:50;color:red;");
+    time->setSegmentStyle(QLCDNumber::Flat);
+    time->hide();
+    counttimer=new QTimer(this);
+    QObject::connect(counttimer,SIGNAL(timeout()),this,SLOT(updatetimer()));
+    QObject::connect(Return,SIGNAL(clicked()),this,SLOT(returnhome()));
+    QObject::connect(Replay,SIGNAL(clicked()),this,SLOT(replay()));
+}
+void maze::startgame1()
+{
+    initgame();
+    gametime =MX*MY*0.2;
+    updatetimer();
+    counttimer->start(1000);
+    time->show();
+}
+void maze::initgame()//初始化游戏界面
+{
+    Clabel->hide();
+    Clabel->setDisabled(true);
+    start1->hide();
+    start1->setDisabled(true);
+    start2->hide();
+    start2->setDisabled(true);
+    start3->hide();
+    start3->setDisabled(true);
+    setting->hide();
+    setting->setDisabled(true);
     Return->show();
     Replay->show();
     clock1->show();
     clock2->show();
+    Return->setDisabled(false);
+    Replay->setDisabled(false);
+    clock1->setDisabled(false);
+    clock2->setDisabled(false);
     //铺地板，铺墙
-
-
 }
-void maze::returnhome()
+void maze::returnhome()//返回主界面
 {
+    Return->hide();
+    Return->setDisabled(true);
+    Replay->hide();
+    Replay->setDisabled(true);
+    clock1->hide();
+    clock1->setDisabled(true);
+    clock2->hide();
+    clock2->setDisabled(true);
     Clabel->show();
     Clabel->setDisabled(false);
     start1->show();
@@ -89,9 +110,10 @@ void maze::returnhome()
     start3->setDisabled(false);
     setting->show();
     setting->setDisabled(false);
-
+    time->hide();
+    counttimer->stop();
 }
-void maze::replay()
+void maze::replay()//重玩
 {
     initgame();
 }
@@ -103,11 +125,11 @@ void maze::startgame3()
 {
 
 }
-void maze::settingslot()
+void maze::settingslot()//设置地图大小的函数
 {
 
 }
-void maze::keyPressEvent(QKeyEvent *event)
+void maze::keyPressEvent(QKeyEvent *event)//键盘控制部分
 {
     switch (event->key())
     {
@@ -133,15 +155,15 @@ void maze::keyPressEvent(QKeyEvent *event)
         break;
     }
 }
-void maze::movemouse()
+void maze::movemouse()//响应键盘的移动函数，要有必要的判断，判断是否有墙
 {
 
 }
-void maze::destructwall()
+void maze::destructwall()//构造地图会用到的函数
 {
 
 }
-void maze::updatetimer()
+void maze::updatetimer()//主要负责显示时间
 {
     gametime--;
     QString str;
@@ -154,6 +176,7 @@ void maze::updatetimer()
 void maze::gameover()
 {
     counttimer->stop();
+    //接下来可以做游戏结束界面，记得，先删除当前界面，并把所有square控件delete掉，除了下方栏；
 }
 
 maze::~maze()
