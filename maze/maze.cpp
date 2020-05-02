@@ -176,10 +176,14 @@ void maze::structface()
     {
         for (int j=0;j<MY;j=j+2)
         {
-            allsquare[i][j]->type=wall_label;
+            /*allsquare[i][j]->type=wall_label;
             allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
             allsquare[i][j]->label->show();
-            wall.append(allsquare[i][j]);
+            wall.append(allsquare[i][j]);*/
+            allsquare[i][j]->type=ground_label;
+            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+            allsquare[i][j]->label->show();
+            ground.append(allsquare[i][j]);
         }
     }
     int counter=0;
@@ -223,18 +227,18 @@ void maze::settingslot()//设置地图大小的函数，这个函数还没写完
   L->setValue(MX);
   W->setValue(MY);
 }
-void maze::keyPressEvent(QKeyEvent *event)//键盘控制部分
+void maze::keyPressEvent(QKeyEvent *event)//键盘控制部分//之前的UP和DOWN分别对应1和-1，与allsquare不对应，我做了修改-贾晟浩
 {
     switch (event->key())
     {
     case Qt::Key_Up:
         dx=0;
-        dy=1;
+        dy=-1;
         movemouse();
         break;
     case Qt::Key_Down:
         dx=0;
-        dy=-1;
+        dy=1;
         movemouse();
         break;
     case Qt::Key_Left:
@@ -251,6 +255,31 @@ void maze::keyPressEvent(QKeyEvent *event)//键盘控制部分
 }
 void maze::movemouse()//响应键盘的移动函数，要有必要的判断，判断是否有墙
 {
+    square* tempMouse=allsquare[mouse->X+dx][mouse->Y+dy];//设置临时的指针，先让老鼠移动在判断是否有墙
+
+    if(tempMouse->type==wall_label)//如果老鼠撞到了墙
+    {
+
+    }
+    else//如果老鼠没有撞到墙
+    {
+        if(tempMouse->type==food_label)
+            gameover();
+        else
+            {
+            tempMouse->type=mouse_label;
+            allsquare[mouse->X][mouse->Y]->type=ground_label;
+            allsquare[mouse->X][mouse->Y]->label->clear();
+            allsquare[mouse->X][mouse->Y]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+            allsquare[mouse->X][mouse->Y]->label->show();
+            allsquare[mouse->X+dx][mouse->Y+dy]->type=mouse_label;
+            allsquare[mouse->X+dx][mouse->Y+dy]->label->setMovie(mousegif);
+            mousegif->start();
+            mouse=tempMouse;
+        }
+
+
+    }
 
 }
 void maze::destructwall()//构造地图会用到的函数
