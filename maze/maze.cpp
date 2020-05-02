@@ -147,9 +147,18 @@ void maze::replay()//重玩
     gametime =MX*MY*0.2;
     updatetimer();
     counttimer->start(1000);
-    wall.clear();
-    ground.clear();
-    structface();
+    //wall.clear();
+    //ground.clear();
+    //structface();
+
+    mouse->label->clear();
+    mouse->type=ground_label;
+    allsquare[1][1]->type=mouse_label;
+    mouse=allsquare[1][1];
+    mouse->label->setMovie(mousegif);
+    mousegif->start();
+
+
 }
 void maze::startgame2()
 {
@@ -161,6 +170,7 @@ void maze::startgame3()
 }
 void maze::structface()
 {
+    //铺墙
     for(int i=0;i<MX;i=i+2)
         {
             for(int j=0;j<MY;j=j+1)
@@ -172,6 +182,7 @@ void maze::structface()
             }
         }
 
+    //铺砖
     for(int i=1;i<MX;i=i+2)
     {
         for (int j=0;j<MY;j=j+2)
