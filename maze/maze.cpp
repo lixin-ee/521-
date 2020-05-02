@@ -59,6 +59,25 @@ maze::maze(QWidget *parent)
     QObject::connect(counttimer,SIGNAL(timeout()),this,SLOT(updatetimer()));
     QObject::connect(Return,SIGNAL(clicked()),this,SLOT(returnhome()));
     QObject::connect(Replay,SIGNAL(clicked()),this,SLOT(replay()));
+    mousegif=new QMovie(":/mouse1.gif");
+    QSize s1(Label_Size+5,Label_Size+5);
+    mousegif->setScaledSize(s1);
+    allsquare=new square**[MX];
+        for(int i=0;i<MX;i++)
+        {
+            allsquare[i]=new square*[MY];
+            for (int j=0;j<MY;j++)
+            {
+                allsquare[i][j]=new square;
+                allsquare[i][j]->X=i;
+                allsquare[i][j]->Y=j;
+                allsquare[i][j]->label=new QLabel(this);
+                allsquare[i][j]->label->setGeometry(i*Label_Size,j*Label_Size,Label_Size,Label_Size);
+                allsquare[i][j]->label->hide();
+            }
+        }
+     mouse=allsquare[1][1];
+     food=allsquare[MX-2][MY-2];
 }
 void maze::startgame1()
 {
@@ -89,9 +108,19 @@ void maze::initgame()//初始化游戏界面
     clock1->setDisabled(false);
     clock2->setDisabled(false);
     //铺地板，铺墙
+    structface();
 }
 void maze::returnhome()//返回主界面
 {
+    for(int i=0;i<MX;i++)
+    {
+        for (int j=0;j<MY;j++)
+        {
+            allsquare[i][j]->label->hide();
+        }
+    }
+    wall.clear();
+    ground.clear();
     Return->hide();
     Return->setDisabled(true);
     Replay->hide();
@@ -111,11 +140,16 @@ void maze::returnhome()//返回主界面
     setting->show();
     setting->setDisabled(false);
     time->hide();
-    counttimer->stop();
+    counttimer->stop(); 
 }
 void maze::replay()//重玩
 {
-    initgame();
+    gametime =MX*MY*0.2;
+    updatetimer();
+    counttimer->start(1000);
+    wall.clear();
+    ground.clear();
+    structface();
 }
 void maze::startgame2()
 {
@@ -125,9 +159,69 @@ void maze::startgame3()
 {
 
 }
-void maze::settingslot()//设置地图大小的函数
+void maze::structface()
 {
+    for(int i=0;i<MX;i=i+2)
+        {
+            for(int j=0;j<MY;j=j+1)
+            {
+                allsquare[i][j]->type=wall_label;
+                allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
+                allsquare[i][j]->label->show();
+                wall.append(allsquare[i][j]);
+            }
+        }
 
+    for(int i=1;i<MX;i=i+2)
+    {
+        for (int j=0;j<MY;j=j+2)
+        {
+            allsquare[i][j]->type=wall_label;
+            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
+            allsquare[i][j]->label->show();
+            wall.append(allsquare[i][j]);
+        }
+    }
+    int counter=0;
+    for(int i=1;i<MX;i=i+2)
+    {
+        for (int j=1;j<MY;j=j+2)
+        {
+            allsquare[i][j]->type=ground_label;
+            allsquare[i][j]->path=counter;
+            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+            allsquare[i][j]->label->show();
+            ground.append(allsquare[i][j]);
+            counter++;
+        }
+    }
+    mouse->label->setMovie(mousegif);
+    mousegif->start();
+    mouse->type=mouse_label;
+    food->label->setStyleSheet("QLabel{border-image:url(:/cheese.jpg)}");
+    food->type=food_label;
+}
+void maze::settingslot()//设置地图大小的函数，这个函数还没写完，先别修改-by lixin.
+{
+  QDialog* setwindowsize=new QDialog(this);
+  setwindowsize->setWindowTitle("修改难度");
+  QPushButton* save=new QPushButton (setwindowsize);
+  QPushButton* cancle=new QPushButton(setwindowsize);
+  QSlider* L=new QSlider (setwindowsize);
+  QSlider* W=new QSlider (setwindowsize) ;
+  setwindowsize->resize(400,400);
+  save->setGeometry(50,300,100,50);
+  cancle->setGeometry(250,300,100,50);
+  L->setOrientation(Qt::Horizontal);
+  W->setOrientation(Qt::Horizontal);
+  L->setGeometry(30,50,300,50);
+  W->setGeometry(30,100,100,50);
+  L->setRange(11,51);
+  L->setSingleStep(2);
+  W->setRange(15,31);
+  W->setSingleStep(2);
+  L->setValue(MX);
+  W->setValue(MY);
 }
 void maze::keyPressEvent(QKeyEvent *event)//键盘控制部分
 {
@@ -176,7 +270,7 @@ void maze::updatetimer()//主要负责显示时间
 void maze::gameover()
 {
     counttimer->stop();
-    //接下来可以做游戏结束界面，记得，先删除当前界面，并把所有square控件delete掉，除了下方栏；
+    //接下来可以做游戏结束界面，记得，先删除当前界面,除了下方栏；
 }
 
 maze::~maze()

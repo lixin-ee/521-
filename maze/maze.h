@@ -16,6 +16,8 @@
 #include<QKeyEvent>
 #include<QString>
 #include<QFont>
+#include<QDialog>
+#include<QSlider>
 #define Label_Size  30
 using namespace std;
 
@@ -43,6 +45,7 @@ public:
     void gameover();
     void destructwall();
     void movecat();
+    void structface();
     void keyPressEvent(QKeyEvent *event);
     ~maze();
 private slots:
@@ -72,12 +75,14 @@ private:
     square*cat;
     square*mouse;
     square*food;
+    QMovie* mousegif;
     int dx=1;
     int dy=0;
-    int MX=40;
-    int MY=30;
+    int MX=41;
+    int MY=31;
     int gametime;
     QVector<square*>wall;
+    square*** allsquare;
     QVector<square*>ground;
 };
 
