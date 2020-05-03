@@ -18,6 +18,8 @@
 #include<QFont>
 #include<QDialog>
 #include<QSlider>
+#include<cstdlib>
+#include<ctime>
 #define Label_Size  30
 using namespace std;
 
