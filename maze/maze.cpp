@@ -29,7 +29,7 @@ void maze::startgame1()
     counttimer=new QTimer(this);
     QObject::connect(counttimer,SIGNAL(timeout()),this,SLOT(updatetimer()));
     counttimer->start(1000);
-    time->show();
+    printtime->show();
 
 }
 void maze::initgame()//初始化游戏界面
@@ -50,7 +50,7 @@ void maze::initgame()//初始化游戏界面
     Replay->setFocusPolicy(Qt::NoFocus);
     clock1=new QLabel(this);
     clock2=new QLabel(this);
-    time=new QLCDNumber(this);
+    printtime=new QLCDNumber(this);
     Return->setGeometry(0,MY*Label_Size,2*Label_Size,2*Label_Size);
     Return->setStyleSheet("QPushButton{border-image:url(:/return.png);}");
     Replay->setGeometry((MX-2)*Label_Size,MY*Label_Size,2*Label_Size,2*Label_Size);
@@ -63,12 +63,12 @@ void maze::initgame()//初始化游戏界面
     Replay->show();
     clock1->show();
     clock2->show();
-    time->setMode(QLCDNumber::Dec);
-    time->setDigitCount(4);
-    time->setGeometry((MX/2-1)*Label_Size,MY*Label_Size,2*Label_Size,2*Label_Size);
-    time->setStyleSheet("font:50;color:red;");
-    time->setSegmentStyle(QLCDNumber::Flat);
-    time->show();
+    printtime->setMode(QLCDNumber::Dec);
+    printtime->setDigitCount(4);
+    printtime->setGeometry((MX/2-1)*Label_Size,MY*Label_Size,2*Label_Size,2*Label_Size);
+    printtime->setStyleSheet("font:50;color:red;");
+    printtime->setSegmentStyle(QLCDNumber::Flat);
+    printtime->show();
     QObject::connect(Return,SIGNAL(clicked()),this,SLOT(returnhome()));
     QObject::connect(Replay,SIGNAL(clicked()),this,SLOT(replay()));
     //铺地板，铺墙
@@ -100,7 +100,7 @@ void maze::returnhome()//返回主界面
     delete counttimer;
     delete Return;
     delete Replay;
-    delete time;
+    delete printtime;
     delete clock1;
     delete clock2;
 }
@@ -178,7 +178,7 @@ void maze::structface()
             counter++;
         }
     }
-    //srand(time(0));
+    srand(time(0));
     destructwall();
     mouse=allsquare[1][1];
     food=allsquare[MX-2][MY-2];
@@ -365,7 +365,7 @@ void maze::updatetimer()//主要负责显示时间
    if(gametime<100&&gametime>=10){str="00"+QString::number(gametime);}
    if(gametime<10&&gametime>=0){str="000"+QString::number(gametime);}
    if(gametime>100){str="0"+QString::number(gametime);}
-   time->display(str);
+   printtime->display(str);
    if(gametime==0){gameover();}
 }
 void maze::gameover()

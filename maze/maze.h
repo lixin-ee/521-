@@ -72,7 +72,7 @@ private:
     QLabel* Clabel;
     QPushButton* Return;
     QPushButton* Replay;
-    QLCDNumber* time;
+    QLCDNumber* printtime;
     QLabel* clock1;
     QLabel* clock2;
     square*cat;
