@@ -293,19 +293,32 @@ void maze::destructwall()//构造地图会用到的函数
         int storeX[100] = { 0 };
         int storeY[100] = { 0 };
 
+        int totalimit_X = 0;
+        int totalimit_Y = 0;
+
         for (int i = 0; temp_x != 0; i += 2)
-        {
-            int randomX = rand() % temp_x + 1;
-            storeX[i] = randomX;
-            temp_x = temp_x - randomX;
-        }
+            {
+                int randomX = rand() % (temp_x/2+1) -(temp_x/4) + 1;
+                for (; randomX == 0||(randomX==1&&temp_x!=2&&temp_x!=1)||(randomX==-1&&temp_x!=2&&temp_x!=1) || totalimit_X + randomX <= 0;)
+                {
+                    randomX = rand() % (temp_x/2+1) -(temp_x/4) + 1;
+                }
+                totalimit_X += randomX;
+                storeX[i] = randomX;
+                temp_x = temp_x - randomX;
+            }
 
         for (int j = 1; temp_y != 0; j += 2)
-        {
-            int randomY = rand() % temp_y + 1;
-            storeY[j] = randomY;
-            temp_y = temp_y - randomY;
-        }
+            {
+                int randomY = rand() % (temp_y/2+1) -(temp_y/4) + 1;
+                for (; randomY == 0||(randomY==1&&temp_y!=2&&temp_y!=1)||(randomY==-1&&temp_y!=2&&temp_y!=1)||totalimit_Y+randomY<=0;)
+                {
+                    randomY = rand() % (temp_y/2+1) -(temp_y/4) + 1;
+                }
+                totalimit_Y += randomY;
+                storeY[j] = randomY;
+                temp_y = temp_y - randomY;
+            }
 
 
         int totalx = 0;
@@ -317,7 +330,7 @@ void maze::destructwall()//构造地图会用到的函数
 
             if (i % 2 == 0 && storeX[i] != 0)
             {
-                for (int j = 1; j < storeX[i]+1; j++)
+                for (int j = 1; j < (storeX[i] > 0 ? (storeX[i] + 1) : (-storeX[i] + 1)); j++)
                 {
                     if(totaly==0)
                     {
@@ -330,10 +343,20 @@ void maze::destructwall()//构造地图会用到的函数
 
                     else
                     {
-                        allsquare[totalx + j][totaly]->type = ground_label;
-                        allsquare[totalx + j][totaly]->label->clear();
-                        allsquare[totalx + j][totaly]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
-                        allsquare[totalx + j][totaly]->label->show();
+                        if(storeX[i]>=0)
+                        {
+                            allsquare[totalx + j][totaly]->type = ground_label;
+                            allsquare[totalx + j][totaly]->label->clear();
+                            allsquare[totalx + j][totaly]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                            allsquare[totalx + j][totaly]->label->show();
+                        }
+                        else
+                        {
+                            allsquare[totalx - j][totaly]->type = ground_label;
+                            allsquare[totalx - j][totaly]->label->clear();
+                            allsquare[totalx - j][totaly]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                            allsquare[totalx - j][totaly]->label->show();
+                        }
                     }
 
 
@@ -343,12 +366,22 @@ void maze::destructwall()//构造地图会用到的函数
             totalx += storeX[i];
             if (i % 2 != 0 && storeY[i] != 0)
             {
-                for (int j = 1; j < storeY[i]+1; j++)
+                for (int j = 1; j < (storeY[i]>0?(storeY[i]+1):(-storeY[i]+1)); j++)
                 {
-                    allsquare[totalx][totaly+j]->type= ground_label;
-                    allsquare[totalx][totaly+j]->label->clear();
-                    allsquare[totalx][totaly+j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
-                    allsquare[totalx][totaly+j]->label->show();
+                    if(storeY[i]>=0)
+                    {
+                        allsquare[totalx][totaly+j]->type= ground_label;
+                        allsquare[totalx][totaly+j]->label->clear();
+                        allsquare[totalx][totaly+j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                        allsquare[totalx][totaly+j]->label->show();
+                    }
+                    else
+                    {
+                        allsquare[totalx][totaly-j]->type= ground_label;
+                        allsquare[totalx][totaly-j]->label->clear();
+                        allsquare[totalx][totaly-j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                        allsquare[totalx][totaly-j]->label->show();
+                    }
                 }
             }
             totaly += storeY[i];
