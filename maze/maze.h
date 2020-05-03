@@ -46,6 +46,7 @@ public:
 
     void gameover();
     void destructwall();
+    void RandestructWall();
     void movecat();
     void structface();
     void keyPressEvent(QKeyEvent *event);
