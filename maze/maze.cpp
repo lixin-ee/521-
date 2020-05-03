@@ -285,7 +285,48 @@ void maze::movemouse()//响应键盘的移动函数，要有必要的判断，�
         }
 
 }
-void maze::destructwall()//构造地图会用到的函数
+
+void maze::RandestructWall()//随机摧毁墙的构造地图函数，配合我写的砸墙函数使用，改用prim算法的时候记得注释掉--贾晟浩
+{
+    for(int i=1;i<MX-1;i++)
+    {
+        for(int j=1;j<MY-1;j++)
+        {
+            int ran=rand()%2+1;
+            if(allsquare[i][j]->type==wall_label&&(allsquare[i+1][j]->type==wall_label||allsquare[i-1][j]->type==wall_label||
+                      allsquare[i][j+1]->type==wall_label||allsquare[i][j-1]->type==wall_label))
+            {
+                    if(ran==1)
+            {
+                    allsquare[i][j]->label->clear();
+                    allsquare[i][j]->type=ground_label;
+                    allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                    allsquare[i][j]->label->show();
+        }
+        }
+            if(allsquare[i][j+1]->type==wall_label&&allsquare[i][j-1]->type==wall_label&&
+                    allsquare[i+1][j]->type==wall_label&&allsquare[i-1][j]->type==wall_label)
+            {
+                allsquare[i][j]->label->clear();
+                allsquare[i][j]->type=ground_label;
+                allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                allsquare[i][j]->label->show();
+            }
+            if(allsquare[i][j+1]->type==ground_label&&allsquare[i][j-1]->type==ground_label&&
+                    allsquare[i+1][j]->type==ground_label&&allsquare[i-1][j]->type==ground_label&&
+                    allsquare[i+1][j+1]->type==ground_label&&allsquare[i+1][j-1]->type==ground_label&&
+                    allsquare[i-1][j+1]->type==ground_label&&allsquare[i-1][j-1]->type==ground_label)
+            {
+                allsquare[i][j]->label->clear();
+                allsquare[i][j]->type=ground_label;
+                allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                allsquare[i][j]->label->show();
+            }
+        }
+    }
+}
+
+void maze::destructwall()//打通前往终点路线的函数，未使用prim算法，重写的时候可以整个函数注释掉，然后再重新写一遍destructwall
 {
     int temp_x = MX - 2;
         int temp_y = MY - 2;
@@ -387,9 +428,7 @@ void maze::destructwall()//构造地图会用到的函数
             totaly += storeY[i];
 
         }
-
-
-
+        RandestructWall();
 }
 void maze::updatetimer()//主要负责显示时间
 {
