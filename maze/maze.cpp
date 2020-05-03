@@ -46,6 +46,7 @@ void maze::initgame()//初始化游戏界面
     start3->hide();
     start3->setDisabled(true);
     Return=new QPushButton(this);
+    Return->setFocusPolicy(Qt::NoFocus);
     Replay=new QPushButton(this);
     Replay->setFocusPolicy(Qt::NoFocus);
     clock1=new QLabel(this);
@@ -267,7 +268,7 @@ void maze::movemouse()//响应键盘的移动函数，要有必要的判断，�
         else//如果老鼠没有撞到墙
         {
             if(tempMouse->type==food_label)
-                gameover();
+                gameover(1);
             else
                 {
                 tempMouse->type=mouse_label;
@@ -438,12 +439,49 @@ void maze::updatetimer()//主要负责显示时间
    if(gametime<10&&gametime>=0){str="000"+QString::number(gametime);}
    if(gametime>100){str="0"+QString::number(gametime);}
    printtime->display(str);
-   if(gametime==0){gameover();}
+   if(gametime==0){gameover(0);}
 }
-void maze::gameover()
+void maze::gameover(int a)
 {
 
     //接下来可以做游戏结束界面，记得，先删除当前界面,除了下方栏；
+    QDialog *donghua=new QDialog(this);
+             donghua->setWindowTitle("过场动画");
+             donghua->resize(400,400);
+             QLabel* image=new QLabel(donghua);
+                  if(a==1)
+                  {
+                    image->setStyleSheet("QLabel{border-image:url(:/mousewin.jpg);}");
+                  }
+                  else
+                  {
+                    image->setStyleSheet("QLabel{border-image:url(:/catwin.jpg);}");
+                  }
+                  image->setGeometry(0,0,400,300);
+             QPushButton *ok=new QPushButton("OK",donghua);
+             QPushButton *cancle=new QPushButton("Cancle",donghua);
+             ok->setGeometry(50,300,100,50);
+             cancle->setGeometry(250,300,100,50);
+             QObject::connect(ok,SIGNAL(clicked()),donghua,SLOT(accept()));
+             QObject::connect(cancle,SIGNAL(clicked()),donghua,SLOT(reject()));
+             if(donghua->exec()==QDialog::Accepted)
+             {
+
+                 for(int i=0;i<MX;i++)
+                 {
+                     for (int j=0;j<MY;j++)
+                     {
+                        delete allsquare[i][j]->label;
+                        delete allsquare[i][j];
+
+                     }
+                 }
+                 wall.clear();
+                 ground.clear();
+                structface();
+             }
+
+             delete donghua;
 }
 
 

@@ -44,7 +44,7 @@ class maze : public QWidget
 public:
     maze(QWidget *parent = nullptr);
 
-    void gameover();
+    void gameover(int);
     void destructwall();
     void RandestructWall();
     void movecat();
