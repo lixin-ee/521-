@@ -157,10 +157,11 @@ void maze::structface()
             allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
             allsquare[i][j]->label->show();
             wall.append(allsquare[i][j]);*/
-            allsquare[i][j]->type=ground_label;
-            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+            //此处把ground改为wall
+            allsquare[i][j]->type=wall_label;
+            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
             allsquare[i][j]->label->show();
-            ground.append(allsquare[i][j]);
+            wall.append(allsquare[i][j]);
         }
     }
     int counter=0;
@@ -168,14 +169,17 @@ void maze::structface()
     {
         for (int j=1;j<MY;j=j+2)
         {
-            allsquare[i][j]->type=ground_label;
+            //此处把ground改为wall
+            allsquare[i][j]->type=wall_label;
             allsquare[i][j]->path=counter;
-            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
             allsquare[i][j]->label->show();
-            ground.append(allsquare[i][j]);
+            wall.append(allsquare[i][j]);
             counter++;
         }
     }
+    //srand(time(0));
+    destructwall();
     mouse=allsquare[1][1];
     food=allsquare[MX-2][MY-2];
     mouse->label->setMovie(mousegif);
@@ -283,6 +287,75 @@ void maze::movemouse()//响应键盘的移动函数，要有必要的判断，�
 }
 void maze::destructwall()//构造地图会用到的函数
 {
+    int temp_x = MX - 2;
+        int temp_y = MY - 2;
+
+        int storeX[100] = { 0 };
+        int storeY[100] = { 0 };
+
+        for (int i = 0; temp_x != 0; i += 2)
+        {
+            int randomX = rand() % temp_x + 1;
+            storeX[i] = randomX;
+            temp_x = temp_x - randomX;
+        }
+
+        for (int j = 1; temp_y != 0; j += 2)
+        {
+            int randomY = rand() % temp_y + 1;
+            storeY[j] = randomY;
+            temp_y = temp_y - randomY;
+        }
+
+
+        int totalx = 0;
+        int totaly = 0;
+
+        for (int i = 0; i<100; i++)
+        {
+
+
+            if (i % 2 == 0 && storeX[i] != 0)
+            {
+                for (int j = 1; j < storeX[i]+1; j++)
+                {
+                    if(totaly==0)
+                    {
+                        allsquare[totalx + j][totaly+1]->type = ground_label;
+                        allsquare[totalx + j][totaly+1]->label->clear();
+                        allsquare[totalx + j][totaly+1]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                        allsquare[totalx + j][totaly+1]->label->show();
+                    }
+
+
+                    else
+                    {
+                        allsquare[totalx + j][totaly]->type = ground_label;
+                        allsquare[totalx + j][totaly]->label->clear();
+                        allsquare[totalx + j][totaly]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                        allsquare[totalx + j][totaly]->label->show();
+                    }
+
+
+                }
+
+            }
+            totalx += storeX[i];
+            if (i % 2 != 0 && storeY[i] != 0)
+            {
+                for (int j = 1; j < storeY[i]+1; j++)
+                {
+                    allsquare[totalx][totaly+j]->type= ground_label;
+                    allsquare[totalx][totaly+j]->label->clear();
+                    allsquare[totalx][totaly+j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                    allsquare[totalx][totaly+j]->label->show();
+                }
+            }
+            totaly += storeY[i];
+
+        }
+
+
 
 }
 void maze::updatetimer()//主要负责显示时间
