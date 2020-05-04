@@ -54,8 +54,8 @@ public:
     ~maze();
 private slots:
     //void findpath();这个可以看情况做不做，如果太难实现就不做了，主要负责寻路，类似提示路线；
-    void startgame1();
-    void startgame2();
+   void startgame1();
+   void startgame2();
     void startgame3();
     void replay();
     void returnhome();
@@ -63,6 +63,7 @@ private slots:
     void settingslot();
     void updatetimer();
     void movemouse();
+    void movemouse2();
 private:
     Ui::maze *ui;
     QPushButton* setting;
@@ -90,5 +91,5 @@ private:
     QVector<square*>ground;
 
 };
-
+static int gamesta=0;
 #endif // MAZE_H
