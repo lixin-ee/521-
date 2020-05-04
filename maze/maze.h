@@ -86,7 +86,7 @@ private:
     int MY=31;
     int gametime;
     QVector<square*>wall;
-    square*** allsquare;
+    square*** allsquare=nullptr;
     QVector<square*>ground;
 
 };

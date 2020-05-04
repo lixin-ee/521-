@@ -85,9 +85,11 @@ void maze::returnhome()//返回主界面
         {
            delete allsquare[i][j]->label;
            delete allsquare[i][j];
-
+           allsquare[i][j]=nullptr;
         }
+        allsquare[i]=nullptr;
     } 
+    allsquare=nullptr;
     Clabel->show();
     Clabel->setDisabled(false);
     setting->show();
@@ -127,6 +129,7 @@ void maze::startgame3()
 }
 void maze::structface()
 {
+    allsquare=new square**[MX];
     for(int i=0;i<MX;i++)
     {
         allsquare[i]=new square*[MY];
@@ -503,11 +506,16 @@ void maze::resizewindow()
 }
 maze::~maze()
 {
-    delete ui;
-    delete setting;
-    delete Clabel;
-    delete start1;
-    delete start2;
-    delete start3;
+    if(allsquare==nullptr){;}
+    else {for(int i=0;i<MX;i++)
+     {
+
+        for (int j=0;j<MY;j++)
+        {
+            delete allsquare[i][j];
+        }
+        delete [] allsquare[i];
+     }
+    delete [] allsquare;}
 }
 
