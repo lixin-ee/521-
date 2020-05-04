@@ -110,7 +110,7 @@ void maze::returnhome()//返回主界面
 }
 void maze::replay()//重玩
 {
-    gametime =MX*MY*0.2;
+    gametime =MX*MY*0.02;
     updatetimer();
     counttimer->start(1000);
     mouse->label->clear();
@@ -203,45 +203,40 @@ void maze::structface()
 }
 void maze::settingslot()//设置地图大小的函数
 {
-  QDialog* setwindowsize=new QDialog(this);
-  setwindowsize->setWindowTitle("修改难度");
-  QPushButton*save=new QPushButton ("ok",setwindowsize);
-  QPushButton*cancle=new QPushButton("cancle",setwindowsize);
-  QSlider* L=new QSlider (setwindowsize);
-  QSlider* W=new QSlider (setwindowsize) ;
-  QLabel* length=new QLabel(setwindowsize);
-  QLabel* width=new QLabel (setwindowsize);
-  length->setText("长度:");
-  width->setText("宽度:");
-  length->setGeometry(30,50,40,40);
-  width->setGeometry(30,100,40,40);
-  setwindowsize->resize(400,400);
-  save->setGeometry(50,300,100,50);
-  cancle->setGeometry(250,300,100,50);
-  L->setOrientation(Qt::Horizontal);
-  W->setOrientation(Qt::Horizontal);
-  L->setGeometry(60,50,300,50);
-  W->setGeometry(60,100,100,50);
-  L->setRange(11,51);
-  L->setSingleStep(2);
-  W->setRange(15,31);
-  W->setSingleStep(2);
-  L->setValue(MX);
-  W->setValue(MY);
-  QObject::connect(save,SIGNAL(clicked()),setwindowsize,SLOT(accept()));
-  QObject::connect(cancle,SIGNAL(clicked()),setwindowsize,SLOT(reject()));
-  if(setwindowsize->exec()==QDialog::Accepted)
-  {
-      MX=L->value();MY=W->value();
-      resizewindow();
-  }
-  delete W;
-  delete L;
-  delete save;
-  delete cancle;
-  delete length;
-  delete width;
-  delete setwindowsize;
+    QDialog* setwindowsize=new QDialog(this);
+      setwindowsize->setWindowTitle("修改难度");
+      QPushButton*save=new QPushButton ("ok",setwindowsize);
+      QPushButton*cancle=new QPushButton("cancle",setwindowsize);
+      QSlider* L=new QSlider (setwindowsize);
+      QSlider* W=new QSlider (setwindowsize) ;
+      QLabel* length=new QLabel(setwindowsize);
+      QLabel* width=new QLabel (setwindowsize);
+      length->setText("长度:");
+      width->setText("宽度:");
+      length->setGeometry(30,50,40,40);
+      width->setGeometry(30,100,40,40);
+      setwindowsize->resize(400,400);
+      save->setGeometry(50,300,100,50);
+      cancle->setGeometry(250,300,100,50);
+      L->setOrientation(Qt::Horizontal);
+      W->setOrientation(Qt::Horizontal);
+      L->setGeometry(60,50,300,50);
+      W->setGeometry(60,100,100,50);
+      L->setRange(6,26);
+      L->setSingleStep(1);
+      W->setRange(8,16);
+      W->setSingleStep(1);
+      L->setValue((MX+1)/2);
+      W->setValue((MY+1)/2);
+      QObject::connect(save,SIGNAL(clicked()),setwindowsize,SLOT(accept()));
+      QObject::connect(cancle,SIGNAL(clicked()),setwindowsize,SLOT(reject()));
+      if(setwindowsize->exec()==QDialog::Accepted)
+      {
+          MX=2*(L->value())-1;MY=2*(W->value())-1;
+          resizewindow();
+      }
+
+      delete setwindowsize;
 }
 void maze::keyPressEvent(QKeyEvent *event)//键盘控制部分
 {
@@ -616,8 +611,9 @@ void maze::gameover(int a)
 {
 
     //接下来可以做游戏结束界面，记得，先删除当前界面,除了下方栏；
+    counttimer->stop();
     QDialog *donghua=new QDialog(this);
-             donghua->setWindowTitle("过场动画");
+             donghua->setWindowTitle("游戏结束");
              donghua->resize(400,400);
              QLabel* image=new QLabel(donghua);
                   if(a==1)
@@ -644,11 +640,14 @@ void maze::gameover(int a)
                      {
                         delete allsquare[i][j]->label;
                         delete allsquare[i][j];
-
                      }
+                     delete allsquare[i];
                  }
                  wall.clear();
                  ground.clear();
+                 if(a==0)
+                     gametime=MX*MY*0.2;
+                 counttimer->start();
                 structface();
              }
 
