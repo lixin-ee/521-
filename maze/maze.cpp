@@ -87,8 +87,9 @@ void maze::returnhome()//返回主界面
            delete allsquare[i][j];
            allsquare[i][j]=nullptr;
         }
-        allsquare[i]=nullptr;
+        delete allsquare[i];
     } 
+    delete allsquare;
     allsquare=nullptr;
     Clabel->show();
     Clabel->setDisabled(false);
@@ -592,10 +593,11 @@ void maze::gameover(int a)
                      }
                      delete allsquare[i];
                  }
+                 delete allsquare;
+                 allsquare=nullptr;
                  wall.clear();
                  ground.clear();
-                 if(a==0)
-                     gametime=MX*MY*0.2;
+                 gametime=MX*MY*0.2;
                  counttimer->start();
                 structface();
              }
