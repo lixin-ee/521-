@@ -23,6 +23,7 @@ maze::maze(QWidget *parent)
 }
 void maze::startgame1()
 {
+    gamesta=1;
     initgame();
     gametime =MX*MY*0.2;
     updatetimer();
@@ -121,11 +122,19 @@ void maze::replay()//重玩
 }
 void maze::startgame2()
 {
+    gamesta=2;
+    initgame();
+    gametime =MX*MY*0.2;
+    updatetimer();
+    counttimer=new QTimer(this);
+    QObject::connect(counttimer,SIGNAL(timeout()),this,SLOT(updatetimer()));
+    counttimer->start(1000);
+    printtime->show();
 
 }
 void maze::startgame3()
 {
-
+;
 }
 void maze::structface()
 {
@@ -241,22 +250,34 @@ void maze::keyPressEvent(QKeyEvent *event)//键盘控制部分
     case Qt::Key_Up:
         dx=0;
         dy=-1;
-        movemouse();
+        if(gamesta==1)
+            movemouse();
+        if(gamesta==2)
+            movemouse2();
         break;
     case Qt::Key_Down:
         dx=0;
         dy=1;
-        movemouse();
+        if(gamesta==1)
+            movemouse();
+        if(gamesta==2)
+            movemouse2();
         break;
     case Qt::Key_Left:
         dx=-1;
         dy=0;
-        movemouse();
+        if(gamesta==1)
+            movemouse();
+        if(gamesta==2)
+            movemouse2();
         break;
     case Qt::Key_Right:
         dx=1;
         dy=0;
-        movemouse();
+        if(gamesta==1)
+            movemouse();
+        if(gamesta==2)
+            movemouse2();
         break;
     }
 }
@@ -267,6 +288,36 @@ void maze::movemouse()//响应键盘的移动函数，要有必要的判断，�
         if(tempMouse->type==wall_label)//如果老鼠撞到了墙
         {
 
+        }
+        else//如果老鼠没有撞到墙
+        {
+            if(tempMouse->type==food_label)
+                gameover(1);
+            else
+                {
+                tempMouse->type=mouse_label;
+                allsquare[mouse->X][mouse->Y]->type=ground_label;
+                allsquare[mouse->X][mouse->Y]->label->clear();
+                allsquare[mouse->X][mouse->Y]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                allsquare[mouse->X][mouse->Y]->label->show();
+                allsquare[mouse->X+dx][mouse->Y+dy]->type=mouse_label;
+                allsquare[mouse->X+dx][mouse->Y+dy]->label->setMovie(mousegif);
+                mousegif->start();
+                mouse=tempMouse;
+            }
+
+
+        }
+
+}
+
+void maze::movemouse2()//响应键盘的移动函数，要有必要的判断，判断是否有墙
+{
+    square* tempMouse=allsquare[mouse->X+dx][mouse->Y+dy];//设置临时的指针，先让老鼠移动在判断是否有墙
+
+        if(tempMouse->type==wall_label)//如果老鼠撞到了墙
+        {
+tempMouse->type=ground_label;
         }
         else//如果老鼠没有撞到墙
         {
