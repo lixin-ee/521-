@@ -290,7 +290,7 @@ void maze::movemouse()//响应键盘的移动函数，要有必要的判断，�
 
 }
 
-void maze::RandestructWall()//随机摧毁墙的构造地图函数，配合我写的砸墙函数使用，改用prim算法的时候记得注释掉--贾晟浩
+/*void maze::RandestructWall()//随机摧毁墙的构造地图函数，配合我写的砸墙函数使用，改用prim算法的时候记得注释掉--贾晟浩
 {
     for(int i=1;i<MX-1;i++)
     {
@@ -328,9 +328,9 @@ void maze::RandestructWall()//随机摧毁墙的构造地图函数，配合我�
             }
         }
     }
-}
+}*/
 
-void maze::destructwall()//打通前往终点路线的函数，未使用prim算法，重写的时候可以整个函数注释掉，然后再重新写一遍destructwall
+/*void maze::destructwall()//打通前往终点路线的函数，未使用prim算法，重写的时候可以整个函数注释掉，然后再重新写一遍destructwall
 {
     int temp_x = MX - 2;
         int temp_y = MY - 2;
@@ -433,6 +433,123 @@ void maze::destructwall()//打通前往终点路线的函数，未使用prim算�
 
         }
         RandestructWall();
+}*/
+void maze::destructwall()//该函数借鉴于CSDN上用户god_speed、的函数
+{
+#define m (MX-2)//row
+#define n (MY-2)
+#define down 1
+#define right 2
+#define left 4
+#define up 8
+#define WALL -1
+#define NOTHING 2
+
+    struct block {
+        int row, column, direction;
+        block(int _row, int _column, int _direction) {
+            row = _row;
+            column = _column;
+            direction = _direction;
+        }
+    };
+    struct point {
+        int x;
+        int y;
+    }start, end;
+
+    vector<block> myblock;
+    int x_num = 1, y_num = 1;//矿工位置
+    int G[100][100];
+
+    //将地图全部置为墙
+    memset(G, WALL, sizeof(G));
+    //定义起始点
+    G[1][1] = NOTHING;
+    start.x = start.y = 1;
+
+    if (x_num + 1 <= m && G[x_num + 1][y_num] == WALL) {//down
+        myblock.push_back(block(x_num + 1, y_num, down));
+    }
+    if (y_num + 1 <= n && G[x_num][y_num + 1] == WALL) {//right
+        myblock.push_back(block(x_num, y_num + 1, right));
+    }
+    if (x_num - 1 >= 1 && G[x_num - 1][y_num] == WALL) {//up
+        myblock.push_back(block(x_num - 1, y_num, up));
+    }
+    if (y_num - 1 >= 1 && G[x_num][y_num - 1] == WALL) {//left
+        myblock.push_back(block(x_num, y_num - 1, left));
+    }
+
+    while (myblock.size()) {
+        int BlockSize = myblock.size();
+        //随机选择一堵墙（生成0 ~ BlockSize-1之间的随机数，同时也是vector里墙的下标）
+        int randnum = rand() % BlockSize;
+        block SelectBlock = myblock[randnum];
+        x_num = SelectBlock.row;//矿工来到我们“选择的墙”这里
+        y_num = SelectBlock.column;
+        //根据当前选择的墙的方向进行后续操作
+        //此时，起始点 选择的墙 目标块 三块区域在同一直线上
+        //我们让矿工从“选择的墙”继续前进到“目标块”
+        //矿工有穿墙能力 ：)
+        switch (SelectBlock.direction) {
+        case down: {
+            x_num++;
+            break;
+        }
+        case right: {
+            y_num++;
+            break;
+        }
+        case left: {
+            y_num--;
+            break;
+        }
+        case up: {
+            x_num--;
+            break;
+        }
+        }
+        //目标块如果是墙
+        if (G[x_num][y_num] == WALL) {
+            //打通墙和目标块
+            G[SelectBlock.row][SelectBlock.column] = G[x_num][y_num] = NOTHING;
+            //再次找出与矿工当前位置相邻的墙
+            //找出与当前位置相邻的墙
+            if (x_num + 1 <= m && G[x_num + 1][y_num] == WALL) {//down
+                myblock.push_back(block(x_num + 1, y_num, down));
+            }
+            if (y_num + 1 <= n && G[x_num][y_num + 1] == WALL) {//right
+                myblock.push_back(block(x_num, y_num + 1, right));
+            }
+            if (x_num - 1 >= 1 && G[x_num - 1][y_num] == WALL) {//up
+                myblock.push_back(block(x_num - 1, y_num, up));
+            }
+            if (y_num - 1 >= 1 && G[x_num][y_num - 1] == WALL) {//left
+                myblock.push_back(block(x_num, y_num - 1, left));
+            }
+        }
+        else {//如果不是呢？说明我们的矿工挖到了一个空旷的通路上面 休息一下就好了
+         //relax
+        }
+        //删除这堵墙(把用不了的墙删了，对于那些已经施工过了不必再施工了，同时也是确保我们能跳出循环)
+        myblock.erase(myblock.begin() + randnum);
+    }
+    for (int i = 0; i <= m + 1; i++)
+    {
+        for (int j = 0; j <= n + 1; j++)
+        {
+            if (G[i][j] == NOTHING)
+            {
+                allsquare[i][j]->type = ground_label;
+                allsquare[i][j]->label->clear();
+                allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+                allsquare[i][j]->label->show();
+
+            }
+        }
+    }
+
 }
 void maze::updatetimer()//主要负责显示时间
 {
