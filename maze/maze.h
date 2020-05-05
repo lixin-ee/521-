@@ -43,8 +43,7 @@ class maze : public QWidget
 
 public:
     maze(QWidget *parent = nullptr);
-
-    void gameover(int);
+    void gameover(int,int);
     void destructwall();
     void RandestructWall();
     void movecat();
@@ -64,6 +63,8 @@ private slots:
     void updatetimer();
     void movemouse();
     void movemouse2();
+    void movemouse3();
+    void walk();
 private:
     Ui::maze *ui;
     QPushButton* setting;
@@ -81,8 +82,11 @@ private:
     square*mouse;
     square*food;
     QMovie* mousegif;
+    QMovie* catgif;
     int dx=1;
     int dy=0;
+    int dx1=0;
+    int dy1=-1;
     int MX=41;
     int MY=31;
     int gametime;
