@@ -112,6 +112,8 @@ void maze::returnhome()//返回主界面
     delete printtime;
     delete clock1;
     delete clock2;
+    delete mouse;
+    delete mouse->label;
 }
 void maze::replay()//重玩
 {
@@ -307,10 +309,15 @@ void maze::structface()
     }
     srand(time(0));
     destructwall();
-    mouse=allsquare[1][1];
+    mouse=new square;
+    mouse->label=new QLabel(this);
+    mouse->X=1;
+    mouse->Y=1;
+    mouse->label->setGeometry(Label_Size,Label_Size,Label_Size,Label_Size);
     food=allsquare[MX-2][MY-2];
     mouse->label->setMovie(mousegif);
     mousegif->start();
+    mouse->label->show();
     mouse->type=mouse_label;
     food->label->setStyleSheet("QLabel{border-image:url(:/cheese.jpg)}");
     food->type=food_label;
@@ -400,31 +407,58 @@ void maze::keyPressEvent(QKeyEvent *event)//键盘控制部分
 }
 void maze::movemouse()//响应键盘的移动函数，要有必要的判断，判断是否有墙
 {
-    square* tempMouse=allsquare[mouse->X+dx][mouse->Y+dy];//设置临时的指针，先让老鼠移动在判断是否有墙
-
-        if(tempMouse->type==wall_label)//如果老鼠撞到了墙
+    if(dx==1||dy==1)
+   {
+        mouse->X=(mouse->label->x()/Label_Size);
+        mouse->Y=(mouse->label->y()/Label_Size);
+   }
+    if(dx==-1||dy==-1)
+    {
+       mouse->X=((mouse->label->x()+dx)/Label_Size)-dx;
+       mouse->Y=((mouse->label->y()+dy)/Label_Size)-dy;
+    }
+    if(dy==0)
+    {
+        if(mouse->label->y()%Label_Size==0)
         {
+            square* tempMouse=allsquare[mouse->X+dx][mouse->Y+dy];//设置临时的指针，先让老鼠移动在判断是否有墙
 
-        }
-        else//如果老鼠没有撞到墙
-        {
-            if(tempMouse->type==food_label)
-                gameover(1,0);
-            else
+                if(tempMouse->type==wall_label)//如果老鼠撞到了墙
                 {
-                tempMouse->type=mouse_label;
-                allsquare[mouse->X][mouse->Y]->type=ground_label;
-                allsquare[mouse->X][mouse->Y]->label->clear();
-                allsquare[mouse->X][mouse->Y]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
-                allsquare[mouse->X][mouse->Y]->label->show();
-                allsquare[mouse->X+dx][mouse->Y+dy]->type=mouse_label;
-                allsquare[mouse->X+dx][mouse->Y+dy]->label->setMovie(mousegif);
-                mousegif->start();
-                mouse=tempMouse;
-            }
 
-
+                }
+                else//如果老鼠没有撞到墙
+                {
+                    if(tempMouse->type==food_label)
+                    gameover(1,0);
+                    if(tempMouse->type==ground_label)
+                        {
+                        mouse->label->move(mouse->label->x()+3*dx,mouse->label->y()+3*dy);
+                       }
+                }
         }
+    }
+    if(dx==0)
+    {
+        if(mouse->label->x()%Label_Size==0)
+        {
+            square* tempMouse=allsquare[mouse->X+dx][mouse->Y+dy];//设置临时的指针，先让老鼠移动在判断是否有墙
+
+                if(tempMouse->type==wall_label)//如果老鼠撞到了墙
+                {
+
+                }
+                else//如果老鼠没有撞到墙
+                {
+                    if(tempMouse->type==food_label)
+                        gameover(1,0);
+                    if(tempMouse->type==ground_label)
+                        {
+                        mouse->label->move(mouse->label->x()+3*dx,mouse->label->y()+3*dy);
+                       }
+                }
+        }
+    }
 
 }
 void maze::movemouse3()//响应键盘的移动函数，要有必要的判断，判断是否有墙
@@ -802,6 +836,8 @@ void maze::gameover(int a,int b)
                  }
                  delete allsquare;
                  allsquare=nullptr;
+                 delete mouse;
+                 delete mouse->label;
                  wall.clear();
                  ground.clear();
                  if(a==0)
@@ -838,11 +874,11 @@ void maze::resizewindow()
     resize((MX)*Label_Size,(MY+2)*Label_Size);
     Clabel->setStyleSheet("QLabel{border-image:url(:/cover.jpg);}");
     Clabel->setGeometry(0,0,MX*Label_Size,MY*Label_Size);
-    start1->setGeometry(MX * Label_Size / 2-120 ,MY * Label_Size / 2,240,120);
+    start1->setGeometry(MX * Label_Size / 2-width()/10 ,MY * Label_Size / 2,width()/5,2*height()/15);
     start1->setStyleSheet("QPushButton{border-image:url(:/m1.png);}");
-    start2->setGeometry(MX * Label_Size /2-120,MY * Label_Size / 2+140,240,120);
+    start2->setGeometry(MX * Label_Size /2-width()/10,MY * Label_Size / 2+2*height()/15+20,width()/5,2*height()/15);
     start2->setStyleSheet("QPushButton{border-image:url(:/m2.png);}");
-    start3->setGeometry(MX * Label_Size / 2 -120,MY * Label_Size / 2+280,240,120);
+    start3->setGeometry(MX * Label_Size / 2 -width()/10,MY * Label_Size / 2+4*height()/15+20,width()/5,2*height()/15);
     start3->setStyleSheet("QPushButton{border-image:url(:/m3.png);}");
     setting->setStyleSheet("QPushButton{border-image:url(:/setting.png);}");
     setting->setGeometry(4*MX/5*Label_Size,MY*Label_Size,2*Label_Size,2*Label_Size);
