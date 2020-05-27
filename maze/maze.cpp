@@ -74,7 +74,9 @@ void maze::initgame()//初始化游戏界面
     QObject::connect(Return,SIGNAL(clicked()),this,SLOT(returnhome()));
     QObject::connect(Replay,SIGNAL(clicked()),this,SLOT(replay()));
     //铺地板，铺墙
-    structface();
+
+    if(gamesta==2)structface2();
+    else  structface();
 }
 void maze::returnhome()//返回主界面
 {
@@ -149,6 +151,9 @@ void maze::startgame2()
     initgame();
     gametime =MX*MY*0.2;
     updatetimer();
+
+
+
     counttimer=new QTimer(this);
     QObject::connect(counttimer,SIGNAL(timeout()),this,SLOT(updatetimer()));
     counttimer->start(1000);
@@ -293,6 +298,82 @@ void maze::structface()
             wall.append(allsquare[i][j]);
         }
     }
+    int counter=0;
+    for(int i=1;i<MX;i=i+2)
+    {
+        for (int j=1;j<MY;j=j+2)
+        {
+            //此处把ground改为wall
+            allsquare[i][j]->type=wall_label;
+            allsquare[i][j]->path=counter;
+            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
+            allsquare[i][j]->label->show();
+            wall.append(allsquare[i][j]);
+            counter++;
+        }
+    }
+    srand(time(0));
+    destructwall();
+    mouse=new square;
+    mouse->label=new QLabel(this);
+    mouse->X=1;
+    mouse->Y=1;
+    mouse->label->setGeometry(Label_Size,Label_Size,Label_Size,Label_Size);
+    food=allsquare[MX-2][MY-2];
+    mouse->label->setMovie(mousegif);
+    mousegif->start();
+    mouse->label->show();
+    mouse->type=mouse_label;
+    food->label->setStyleSheet("QLabel{border-image:url(:/cheese.jpg)}");
+    food->type=food_label;
+}
+void maze::structface2()
+{
+    allsquare=new square**[MX];
+    for(int i=0;i<MX;i++)
+    {
+        allsquare[i]=new square*[MY];
+        for (int j=0;j<MY;j++)
+        {
+            allsquare[i][j]=new square;
+            allsquare[i][j]->X=i;
+            allsquare[i][j]->Y=j;
+            allsquare[i][j]->label=new QLabel(this);
+            allsquare[i][j]->label->setGeometry(i*Label_Size,j*Label_Size,Label_Size,Label_Size);
+        }
+    }
+    for(int i=0;i<MX;i=i+2)
+        {
+            for(int j=0;j<MY;j=j+1)
+            {
+                allsquare[i][j]->type=wall_label;
+                allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
+                allsquare[i][j]->label->show();
+                wall.append(allsquare[i][j]);
+            }
+        }
+
+    for(int i=1;i<MX;i=i+2)
+    {
+        for (int j=0;j<MY;j=j+2)
+        {
+           /* allsquare[i][j]->type=wall_label;
+            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
+            allsquare[i][j]->label->show();
+            wall.append(allsquare[i][j]);*/
+            //此处把ground改为wall
+            allsquare[i][j]->type=wall_label;
+            allsquare[i][j]->label->setStyleSheet("QLabel{border-image:url(:/wall.jpg)}");
+            allsquare[i][j]->label->show();
+            wall.append(allsquare[i][j]);
+        }
+    }
+    srand(time(0));
+    int hamX=rand()%(MX-5);
+    int hamY=rand()%(MY-5);
+    allsquare[hamX][hamY]->type=hammer_label;
+    allsquare[hamX][hamY]->label->setStyleSheet("QLabel{border-image:url(:/hammer.jpg)}");
+    allsquare[hamX][hamY]->label->show();
     int counter=0;
     for(int i=1;i<MX;i=i+2)
     {
@@ -497,31 +578,73 @@ void maze::movemouse3()//响应键盘的移动函数，要有必要的判断，�
 
 void maze::movemouse2()//响应键盘的移动函数，要有必要的判断，判断是否有墙
 {
-    square* tempMouse=allsquare[mouse->X+dx][mouse->Y+dy];//设置临时的指针，先让老鼠移动在判断是否有墙
+    if(dx==1||dy==1)
+   {
+        mouse->X=(mouse->label->x()/Label_Size);
+        mouse->Y=(mouse->label->y()/Label_Size);
+   }
+    if(dx==-1||dy==-1)
+    {
+       mouse->X=((mouse->label->x()+dx)/Label_Size)-dx;
+       mouse->Y=((mouse->label->y()+dy)/Label_Size)-dy;
+    }
+    if(dy==0)
+    {
+        if(mouse->label->y()%Label_Size==0)
+        {
+            square* tempMouse=allsquare[mouse->X+dx][mouse->Y+dy];//设置临时的指针，先让老鼠移动在判断是否有墙
 
-        if(tempMouse->type==wall_label)//如果老鼠撞到了墙
-        {
-tempMouse->type=ground_label;
-        }
-        else//如果老鼠没有撞到墙
-        {
-            if(tempMouse->type==food_label)
-                gameover(1,0);
-            else
+            if(tempMouse->type==hammer_label)
+           {
+               tempMouse->type=ground_label;
+               tempMouse->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+               havehammer=1;}
+            if(tempMouse->type==wall_label)//如果老鼠撞到了墙
+                {if(havehammer==1)
+                    {tempMouse->type=ground_label;
+                    tempMouse->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");}
+                    else ;
+               }
+                else//如果老鼠没有撞到墙
                 {
-                tempMouse->type=mouse_label;
-                allsquare[mouse->X][mouse->Y]->type=ground_label;
-                allsquare[mouse->X][mouse->Y]->label->clear();
-                allsquare[mouse->X][mouse->Y]->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
-                allsquare[mouse->X][mouse->Y]->label->show();
-                allsquare[mouse->X+dx][mouse->Y+dy]->type=mouse_label;
-                allsquare[mouse->X+dx][mouse->Y+dy]->label->setMovie(mousegif);
-                mousegif->start();
-                mouse=tempMouse;
-            }
-
-
+                    if(tempMouse->type==food_label)
+                        gameover(1,0);
+                    if(tempMouse->type==ground_label)
+                        {
+                        mouse->label->move(mouse->label->x()+3*dx,mouse->label->y()+3*dy);
+                       }
+                }
         }
+    }
+    if(dx==0)
+    {
+        if(mouse->label->x()%Label_Size==0)
+        {
+            square* tempMouse=allsquare[mouse->X+dx][mouse->Y+dy];//设置临时的指针，先让老鼠移动在判断是否有墙
+
+            if(tempMouse->type==hammer_label)
+           {
+               tempMouse->type=ground_label;
+               tempMouse->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");
+               havehammer=1;}
+            if(tempMouse->type==wall_label)//如果老鼠撞到了墙
+                {if(havehammer==1)
+                    {tempMouse->type=ground_label;
+                    tempMouse->label->setStyleSheet("QLabel{border-image:url(:/diban.jpg)}");}
+                    else ;
+               }
+                else//如果老鼠没有撞到墙
+                {
+                    if(tempMouse->type==food_label)
+                        gameover(1,0);
+                    if(tempMouse->type==ground_label)
+                        {
+                        mouse->label->move(mouse->label->x()+3*dx,mouse->label->y()+3*dy);
+                       }
+                }
+        }
+    }
+
 
 }
 
@@ -866,7 +989,12 @@ void maze::gameover(int a,int b)
              delete donghua;
 }
 
+void maze::generatehammer()
+{
 
+    ;
+
+}
 
 void maze::resizewindow()
 {

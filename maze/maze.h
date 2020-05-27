@@ -27,7 +27,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class maze; }
 QT_END_NAMESPACE
 enum Label{
-    wall_label,cat_label,mouse_label,food_label,ground_label
+    wall_label,cat_label,mouse_label,food_label,ground_label,hammer_label
 };
 struct square
 {
@@ -65,6 +65,8 @@ private slots:
     void movemouse2();
     void movemouse3();
     void walk();
+    void maze::generatehammer();
+    void maze::structface2();
 private:
     Ui::maze *ui;
     QPushButton* setting;
@@ -97,4 +99,5 @@ private:
 
 };
 static int gamesta=0;
+static int havehammer=0;
 #endif // MAZE_H
