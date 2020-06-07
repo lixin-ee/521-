@@ -65,8 +65,8 @@ private slots:
     void movemouse2();
     void movemouse3();
     void walk();
-    void maze::generatehammer();
-    void maze::structface2();
+    void generatehammer();
+    void structface2();
 private:
     Ui::maze *ui;
     QPushButton* setting;
